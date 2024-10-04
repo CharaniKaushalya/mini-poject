@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Files</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .upload-area:hover {
+            background-color: #f9f9f9;
+        }
+        #fileInput {
+            display: none; /* Hide the file input */
+        }
+        .btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .icon a {
+            color: #007bff;
+            margin-right: 10px;
+            text-decoration: none;
+        }
+        .icon a:hover {
+            color: #0056b3;
+        }
+        /* Share dialog styles */
+        .share-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 1000;
+        }
+        .share-dialog h3 {
+            margin: 0 0 15px;
+        }
+        .share-dialog .share-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            color: #007bff;
+        }
+        .share-dialog .share-icon:hover {
+            color: #0056b3;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Uploaded Files</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Download</th>
+                    <th>Share</th>
+                    <th>Rename</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody id="folder-list">
+                <!-- Files will be dynamically loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Share Dialog -->
+    <div class="overlay" id="overlay" onclick="closeShareDialog()"></div>
+    <div class="share-dialog" id="share-dialog">
+        <h3>Share File</h3>
+        <i class="fab fa-facebook-square share-icon" onclick="shareOnFacebook()" title="Share on Facebook"></i>
+        <i class="fab fa-whatsapp share-icon" onclick="shareOnWhatsApp()" title="Share on WhatsApp"></i>
+        <i class="fab fa-facebook-messenger share-icon" onclick="shareOnMessenger()" title="Share on Messenger"></i>
+        <i class="fas fa-times share-icon" onclick="closeShareDialog()" title="Close"></i>
+    </div>
+
+    <script>
+        // Function to handle file input display
+        function handleFile(inputId) {
+            var fileInput = document.getElementById(inputId);
+            var fileName = fileInput.files[0].name;
+            document.getElementById('fileLabel').textContent = fileName;
+        }
+
+        // Function to encrypt the selected file
+        function encryptFile() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file to encrypt.');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('encrypt.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('File encrypted successfully!');
+                    // Reset the file input
+                    fileInput.value = '';
+                    document.getElementById('fileLabel').textContent = 'Click here to upload your file';
+                    // Reload the folder list
+                    loadFolders();
+                } else {
+                    alert('Encryption failed: ' + (data.message || 'Unknown error.'));
+                }
+            })
+            .catch(error => {
+                console.error('Encryption failed:', error);
+                alert('Encryption failed. Please try again.');
+            });
+        }
+
+        // Function to load folders (files) from the backend
+        function loadFolders() {
+            fetch('get_folders.php')
+                .then(response => response.json())
+                .then(data => {
+                    const folderList = document.getElementById('folder-list');
+                    folderList.innerHTML = ''; // Clear existing rows
+
+                    if (data.length === 0) {
+                        folderList.innerHTML = '<tr><td colspan="5">No files found.</td></tr>'; // Updated colspan
+                    } else {
+                        data.forEach(folder => {
+                            const row = document.createElement('tr');
+                            row.setAttribute('data-folder-id', folder.id); // Set folder ID as a data attribute
+                            row.innerHTML = `
+                                <td>${folder.folder_name}</td>
+                                <td class="icon"><a href="${folder.download_link}" title="Download"><i class="fas fa-download"></i></a></td>
+                                <td class="icon"><a href="#" title="Share" onclick="showShareDialog('${folder.folder_name}')"><i class="fas fa-share-alt"></i></a></td>
+                                <td class="icon"><a href="#" title="Rename" onclick="showRenamePrompt('${folder.folder_name}')"><i class="fas fa-edit"></i></a></td>
+                                <td class="icon"><a href="#" title="Delete" onclick="deleteFile('${folder.id}', '${folder.folder_name}')"><i class="fas fa-trash-alt"></i></a></td>
+                            `;
+                            folderList.appendChild(row);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching files:', error);
+                });
+        }
+
+        // Function to show share dialog
+        function showShareDialog(filename) {
+            const dialog = document.getElementById('share-dialog');
+            const overlay = document.getElementById('overlay');
+            dialog.style.display = 'block';
+            overlay.style.display = 'block';
+
+            // Store the file name globally for sharing
+            window.currentShareFileName = filename;
+        }
+
+        // Function to close share dialog
+        function closeShareDialog() {
+            const dialog = document.getElementById('share-dialog');
+            const overlay = document.getElementById('overlay');
+            dialog.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        // Share functions
+        function shareOnFacebook() {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.currentShareFileName)}`;
+            window.open(url, '_blank');
+            closeShareDialog();
+        }
+
+        function shareOnWhatsApp() {
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(window.currentShareFileName)}`;
+            window.open(url, '_blank');
+            closeShareDialog();
+        }
+
+        function shareOnMessenger() {
+            const url = `fb-messenger://share/?link=${encodeURIComponent(window.currentShareFileName)}`;
+            window.open(url, '_blank');
+            closeShareDialog();
+        }
+
+        // Function to delete a file
+        function deleteFile(id, name) {
+            if (confirm(`Are you sure you want to delete "${name}"?`)) {
+                // Send delete request to the backend
+                fetch(`delete.php?id=${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('File deleted successfully.');
+                        loadFolders(); // Reload the folder list to reflect changes
+                    } else {
+                        alert('Delete failed: ' + (data.message || 'Unknown error.'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Delete failed:', error);
+                    alert('Delete failed. Please try again.');
+                });
+            }
+        }
+
+        // Load folders on page load
+        window.onload = loadFolders;
+    </script>
+</body>
+</html>

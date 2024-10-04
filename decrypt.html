@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Encryption & Decryption</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 100px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        #fileInput, #encryptedFileInput {
+            display: none; /* Hide the file input */
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .upload-area:hover {
+            background-color: #f9f9f9;
+        }
+        #fileContainer {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>File Decryption</h2>
+        <div class="upload-area" onclick="document.getElementById('encryptedFileInput').click()">
+            <p>Click here to upload your encrypted file</p>
+            <input type="file" id="encryptedFileInput" accept=".txt,.pdf,.doc,.docx,.jpg,.png" onchange="handleFile('encryptedFileInput')">
+        </div>
+        <button class="btn" onclick="decryptFile()">Decrypt Your File</button>
+        <div id="decryptedFileContainer" style="display: none;">
+            <h3>Decrypted File</h3>
+            <a id="decryptedFileLink" href="#" download>Download Decrypted File</a>
+        </div>
+    </div>
+
+    <script>
+        function handleFile(inputId) {
+            var fileInput = document.getElementById(inputId);
+            var fileName = fileInput.files[0].name;
+            document.querySelector('.upload-area p').textContent = fileName;
+        }
+
+        function encryptFile() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('encrypt.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    var downloadUrl = data.filepath;
+                    var link = document.getElementById('encryptedFileLink');
+                    link.href = downloadUrl;
+                    link.style.display = 'block';
+                    link.innerText = 'Download Encrypted File';
+
+                    var container = document.getElementById('encryptedFileContainer');
+                    container.style.display = 'block';
+                } else {
+                    alert('Encryption failed.');
+                }
+            })
+            .catch(error => {
+                console.error('Encryption failed:', error);
+                alert('Encryption failed. Please try again.');
+            });
+        }
+
+        function decryptFile() {
+            var fileInput = document.getElementById('encryptedFileInput');
+            var file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file.');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('encryptedFile', file);
+
+            fetch('decrypt.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    var downloadUrl = data.filepath;
+                    var link = document.getElementById('decryptedFileLink');
+                    link.href = downloadUrl;
+                    link.style.display = 'block';
+                    link.innerText = 'Download Decrypted File';
+
+                    var container = document.getElementById('decryptedFileContainer');
+                    container.style.display = 'block';
+                } else {
+                    alert('Decryption failed.');
+                }
+            })
+            .catch(error => {
+                console.error('Decryption failed:', error);
+                alert('Decryption failed. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>

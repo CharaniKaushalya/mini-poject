@@ -1,0 +1,232 @@
+/* Define CSS variables for colors and reusable styles */
+:root {
+    --primary-color: #007bff; /* Main blue color for primary buttons and links */
+    --primary-hover: #0056b3; /* Darker blue for hover effects */
+    --secondary-color: #ffc107; /* Yellow color used for 'decrypt' buttons */
+    --tertiary-color: #6c757d; /* Gray color used for 'folder' options */
+    --danger-color: #dc3545; /* Red color used for 'encrypt' options */
+    --font-family: Arial, sans-serif; /* Default font family */
+    --border-radius: 5px; /* Default border radius for elements */
+}
+
+body {
+    font-family: var(--font-family); /* Sets the default font */
+    margin: 0; 
+    padding: 0; 
+}
+
+
+.section {
+    height: 100vh; /* Full viewport height */
+    display: flex; /* Flex layout */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+    flex-direction: row; /* Arranges items in a column */
+}
+
+.section:nth-child(even) {
+    background-color: #f0f0f0; /* Light gray background for even sections */
+}
+
+.section:nth-child(odd) {
+    background-color: #ccc; /* Darker gray background for odd sections */
+}
+
+h2 {
+    text-align: center; /* Centers the heading */
+    color: #333; /* Sets the heading text color to dark gray */
+}
+
+.section#UploadAnyFile {
+    display: flex; /* Flex layout for the section */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+}
+
+.section#UploadAnyFile ul {
+    display: flex; /* Displays list items in a row */
+    justify-content: center; /* Centers the list */
+    padding: 0; /* Removes padding */
+}
+
+.section#UploadAnyFile li {
+    display: inline-block; /* Displays list items as inline blocks */
+    margin: 10px; /* Adds space around list items */
+    list-style: none; /* Removes bullet points */
+}
+
+.section#UploadAnyFile a {
+    display: inline-block; /* Displays links as inline blocks */
+    padding: 10px 20px; /* Adds padding around links */
+    background-color: var(--primary-color); /* Blue background color */
+    color: white; /* White text color */
+    border: none; /* Removes border */
+    border-radius: 20px; /* Rounded corners */
+    text-decoration: none; /* Removes underline */
+    font-size: 16px; /* Sets font size */
+    cursor: pointer; /* Changes cursor to pointer on hover */
+    transition: background-color 0.3s ease; /* Smooth transition for hover */
+}
+
+.section#UploadAnyFile a:hover {
+    background-color: var(--primary-hover); /* Darker blue on hover */
+}
+
+.options-container {
+    display: flex; /* Flex layout */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+    flex-wrap: wrap; /* Allows wrapping of items */
+    margin-top: 50px; /* Adds space above the container */
+}
+
+.option-box {
+    width: 150px; /* Sets width of option boxes */
+    height: 150px; /* Sets height of option boxes */
+    margin: 20px; /* Adds space around boxes */
+    display: flex; /* Flex layout */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 18px; /* Sets font size */
+    color: white; /* White text color */
+    text-decoration: none; /* Removes underline from links */
+}
+
+.option-box a {
+    color: white; /* White text color */
+    text-decoration: none; /* Removes underline from links */
+}
+
+.decrypt {
+    background-color: var(--secondary-color); /* Yellow background */
+}
+
+.folder {
+    background-color: var(--tertiary-color); /* Gray background */
+}
+
+.encrypt {
+    background-color: var(--danger-color); /* Red background */
+}
+
+.container {
+    max-width: 600px; /* Maximum width for the container */
+    margin: 0 auto; /* Centers the container */
+    padding: 60px; /* Adds padding around the content */
+}
+
+.form-group {
+    margin-bottom: 30px; /* Adds space below form elements */
+    width: 100%; /* Full width */
+}
+
+label {
+    display: block; /* Displays labels as block elements */
+    font-weight: bold; /* Makes labels bold */
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 95%; /* Sets width of inputs */
+    padding: 10px; /* Adds padding inside inputs */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: var(--border-radius); /* Rounded corners */
+}
+
+button,
+button[type="submit"] {
+    background-color: var(--primary-color); /* Blue background */
+    color: white; /* White text */
+    border: none; /* Removes border */
+    padding: 10px 20px; /* Adds padding around buttons */
+    border-radius: var(--border-radius); /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth color transition on hover */
+}
+
+button:hover,
+button[type="submit"]:hover {
+    background-color: var(--primary-hover); /* Darker blue on hover */
+}
+
+.register-link {
+    text-align: center; /* Centers the register link */
+    margin-top: 20px; /* Adds space above the link */
+}
+
+.register-link a {
+    color: var(--primary-color); /* Blue text color */
+    text-decoration: none; /* Removes underline */
+}
+
+.register-link a:hover {
+    text-decoration: underline; /* Adds underline on hover */
+}
+
+form {
+    width: 300px; /* Sets form width */
+    padding: 20px; /* Adds padding inside form */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: var(--border-radius); /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+}
+
+label, input {
+    display: block; /* Displays elements as blocks */
+    margin-bottom: 10px; /* Adds space below each element */
+}
+
+input[type="file"] {
+    margin-top: 2px; /* Adds space above the file input */
+}
+
+.slider {
+    position: relative; /* Positions slider relative to its container */
+    width: 200px; /* Sets width of slider */
+    height: 200px; /* Sets height of slider */
+    transform-style: preserve-3d; /* Preserves 3D transform */
+    animation: rotate 15s linear infinite; /* Rotates continuously */
+}
+
+@keyframes rotate {
+    0% {
+        transform: perspective(1000px) rotateY(0deg); /* Starts rotation */
+    }
+    100% {
+        transform: perspective(1000px) rotateY(360deg); /* Completes full rotation */
+    }
+}
+
+.slider span {
+    position: absolute; /* Positions spans absolutely within slider */
+    top: 0; /* Aligns to top */
+    left: 0; /* Aligns to left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    transform-origin: center; /* Sets transform origin to center */
+    transform-style: preserve-3d; /* Preserves 3D effect */
+    transform: rotateY(calc(var(--i) * 45deg)) translateZ(350px); /* Sets 3D position */
+}
+
+.slider span img {
+    position: absolute; /* Positions images absolutely */
+    top: 0; /* Aligns to top */
+    left: 0; /* Aligns to left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    border-radius: 100px; /* Circular images */
+    object-fit: cover; /* Ensures images cover the element */
+    transition: 2s; /* Smooth transition effect */
+}
+
+.container2 {
+    display: flex; /* Flex layout for the container */
+    justify-content: space-between; /* Spreads child elements evenly */
+    padding: 50px; /* Adds padding inside the container */
+}
+
+.contact-form {
+    padding: 20px; /* Adds padding inside the form */
+    border: 1px solid #ccc; /* Light gray border*/
+}
